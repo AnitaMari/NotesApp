@@ -1,6 +1,8 @@
 const express = require("express") //1
 const app = express() //2
 
+app.use(express.json()) //para el body.parser del post
+
 let notes = [
     {
         "id": 1,
@@ -14,6 +16,18 @@ let notes = [
         "date": "19-06-2023",
         "important": false
     },
+    {
+        "id": 3,
+        "content": "Note 3...",
+        "date": "19-06-2023",
+        "important": false
+    },
+    {
+        "id": 4,
+        "content": "Note 4...",
+        "date": "19-06-2023",
+        "important": false
+    },
 
 ]
 
@@ -24,6 +38,51 @@ app.get("/", (request, response) => {
 
 app.get("/api/notes", (request, response) => {
     response.json(notes)
+})
+
+app.get("/api/notes/:id", (request, response) => {
+    const id = Number(request.params.id) //si no ponemos lo de number convierte el número a string y no lo encuentra
+    //console.log({id})
+    const note = notes.find(note => note.id === id)
+    //console.log({note})
+
+    if (note) {
+        response.json(note)
+    } else {
+        response.status(404).end()
+    }   
+})
+
+app.delete("/api/notes/:id", (request, response) => {
+    const id = Number(request.params.id)
+    notes = notes.filter(note => note.id !== id)
+    response.status(204).end() //no content
+})
+
+app.post("/api/notes", (request, response) => {
+    const note = request.body
+    //console.log(note)
+
+    if (!note || !note.content) {
+        return response.status(400).json({
+            error: "note.content is missing"
+        })
+    }
+    
+    const ids = notes.map(note => note.id) //tenemos que general la id
+    const maxId = Math.max(...ids)
+
+    const newNote = { 
+        id: maxId + 1,
+        content: note.content,
+        important: typeof note.important !== "undefined" ? note.important : false, 
+        date: new Date().toISOString()
+    }
+
+    notes = [...notes, newNote]
+    //o notes = notes.concat(newNote)
+
+    response.status(201).json(newNote)
 })
 
 //console.log("hellooo")
