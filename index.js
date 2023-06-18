@@ -1,3 +1,6 @@
+const express = require("express") //1
+const app = express() //2
+
 let notes = [
     {
         "id": 1,
@@ -14,15 +17,28 @@ let notes = [
 
 ]
 
+//decirlo el path y el callback, qué tiene que devolver
+app.get("/", (request, response) => {
+    response.send("<h1>Hi there!<h1>") //express detecta que es html. Se puede ver en inspect, network, header, all, localhost, content-type
+})
+
+app.get("/api/notes", (request, response) => {
+    response.json(notes)
+})
+
 //console.log("hellooo")
-const http = require("http") //forma de cargar módulos en node.js (al menos hace un par de años)
+//poner lo de express arriba y quitar esto de abajo:
+//const http = require("http") //forma de cargar módulos en node.js (al menos hace un par de años)
 //con esto podemos crear el server (ver abajo)
 
-const app = http.createServer((request, response) => { //callback. (Le pasamos una función que se ejecuta cuando pasa algo)
-    response.writeHead(200, { "Content-Type": "application/json" }) //anteriormente había "text/plain"
-    response.end(JSON.stringify(notes)) //para que devuelva las notas de arriba. Transforma la array de objetos a string. Antes pusimos "helloooo" 
-}) //en este caso la función (response) se va a ejecutar cada vez que reciba una request
+//todo esto de abajo se simplifica arriba con express
+// const app = http.createServer((request, response) => { //callback. (Le pasamos una función que se ejecuta cuando pasa algo)
+//     response.writeHead(200, { "Content-Type": "application/json" }) //anteriormente había "text/plain"
+//     response.end(JSON.stringify(notes)) //para que devuelva las notas de arriba. Transforma la array de objetos a string. Antes pusimos "helloooo" 
+// }) //en este caso la función (response) se va a ejecutar cada vez que reciba una request
 
+//cambia un poco esto con express porque el servidor se inicia de forma asíncrona (ya está actualizado)
 const PORT = 3001 //por defecto es el 80 o 443 si entras por https (ssl?)
-app.listen(PORT)
-console.log(`Server running on port ${PORT}`) //aparece en la terminal cuando hago npm start
+app.listen(PORT), () => { //primero espera y después ejecuta lo siguiente
+    console.log(`Server running on port ${PORT}`) //aparece en la terminal cuando hago npm start
+}
