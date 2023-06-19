@@ -1,17 +1,12 @@
 const express = require('express') // 1
 const app = express() // 2
+const logger = require('./loggerMiddleware')
 
 app.use(express.json()) // para el body.parser del post
 // esto sería un middleware, que es una función que intercepta la petición que pasa por la api
 // lee de arriba a abajo
 
-app.use((request, response, next) => {
-  console.log(request.method)
-  console.log(request.path)
-  console.log(request.body)
-  console.log('-------')
-  next() // si no ponemos el next se queda aquí. Ahora veremos que en la consola va al siguiente middleware (path) que sería get etc
-})
+app.use(logger)
 
 let notes = [
   {
